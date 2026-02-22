@@ -1,0 +1,55 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  first_name: MyString
+  last_name: MyString
+  date_of_birth: 2026-02-22
+  height_cm: 1
+  city: MyString
+  state: MyString
+  caste: MyString
+  subcaste: MyString
+  edu_level: MyString
+  edu_field: MyString
+  edu_institution: MyString
+  profession_title: MyString
+  company: MyString
+  company_location: MyString
+  package: 9.99
+  fathers_occupation: MyString
+  mothers_occupation: MyString
+  siblings: 1
+  rashi: MyString
+  nakshatra: MyString
+  gotra: MyString
+  status: MyString
+  starred: false
+  notes: MyText
+  avatar_color: MyString
+
+two:
+  first_name: MyString
+  last_name: MyString
+  date_of_birth: 2026-02-22
+  height_cm: 1
+  city: MyString
+  state: MyString
+  caste: MyString
+  subcaste: MyString
+  edu_level: MyString
+  edu_field: MyString
+  edu_institution: MyString
+  profession_title: MyString
+  company: MyString
+  company_location: MyString
+  package: 9.99
+  fathers_occupation: MyString
+  mothers_occupation: MyString
+  siblings: 1
+  rashi: MyString
+  nakshatra: MyString
+  gotra: MyString
+  status: MyString
+  starred: false
+  notes: MyText
+  avatar_color: MyString

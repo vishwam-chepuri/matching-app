@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  profile: one
+  data: MyText
+  filename: MyString
+  position: 1
+
+two:
+  profile: two
+  data: MyText
+  filename: MyString
+  position: 1
