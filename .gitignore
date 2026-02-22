@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Rails
+backend/tmp/
+backend/log/
+backend/storage/
+backend/config/master.key
+backend/config/credentials/*.key
+backend/.byebug_history
+backend/coverage/
+backend/public/assets/
+backend/public/packs/
+
+# Vite
+frontend/dist/
+frontend/.vite/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/settings.json
+*.swp
+*.swo
