@@ -150,8 +150,6 @@ export default function FilterBar({ filters, setFilters, profiles, viewMode, onV
           </div>
         </div>
 
-        <div className="filter-sep" />
-
         {/* Age range */}
         <div className="filter-group">
           <span className="filter-group__label">Age (yrs)</span>
@@ -161,8 +159,6 @@ export default function FilterBar({ filters, setFilters, profiles, viewMode, onV
             <input type="number" placeholder="Max" value={filters.maxAge} onChange={set('maxAge')} />
           </div>
         </div>
-
-        <div className="filter-sep" />
 
         {/* Height range */}
         <div className="filter-group">
@@ -174,8 +170,6 @@ export default function FilterBar({ filters, setFilters, profiles, viewMode, onV
           </div>
         </div>
 
-        <div className="filter-sep" />
-
         {/* Package range */}
         <div className="filter-group">
           <span className="filter-group__label">Package (LPA)</span>
@@ -185,8 +179,6 @@ export default function FilterBar({ filters, setFilters, profiles, viewMode, onV
             <input type="number" placeholder="Max" value={filters.maxPackage} onChange={set('maxPackage')} />
           </div>
         </div>
-
-        <div className="filter-sep" />
 
         {/* Starred */}
         <div className="filter-group">

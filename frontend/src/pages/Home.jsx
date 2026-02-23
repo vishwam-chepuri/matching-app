@@ -168,7 +168,7 @@ export default function Home({ onAdminClick }) {
 
           {/* ── Desktop-only buttons ── */}
           {onAdminClick && (
-            <button className="btn btn--admin header__desktop-btn" onClick={onAdminClick}>Settings</button>
+            <button className="btn btn--admin header__desktop-btn" onClick={onAdminClick}>Dashboard</button>
           )}
           <button className="btn btn--primary header__desktop-btn" onClick={() => setModalProfile(null)}>Add Profile</button>
           <div className="header__user header__desktop-btn">
@@ -202,7 +202,7 @@ export default function Home({ onAdminClick }) {
                 {onAdminClick && (
                   <button className="header__user-dropdown-item" onClick={() => { setUserMenuOpen(false); onAdminClick(); }}>
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                    Settings
+                    Dashboard
                   </button>
                 )}
                 <button className="header__user-dropdown-item header__user-dropdown-item--danger" onClick={async () => { setUserMenuOpen(false); await logoutUser(); logout(); }}>
