@@ -1,9 +1,13 @@
 import request from './client';
 
-export function uploadPhoto(profileId, { data, filename, position }) {
+export function uploadPhoto(profileId, file, position) {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('position', position);
+
   return request(`/profiles/${profileId}/photos`, {
     method: 'POST',
-    body: JSON.stringify({ photo: { data, filename, position } }),
+    body: formData,
   });
 }
 

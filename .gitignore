@@ -16,6 +16,7 @@ backend/.byebug_history
 backend/coverage/
 backend/public/assets/
 backend/public/packs/
+backend/public/uploads/
 
 # Vite
 frontend/dist/

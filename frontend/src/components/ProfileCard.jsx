@@ -126,7 +126,7 @@ export default function ProfileCard({
       {/* ── Visual Top: Photo or Gradient Banner ── */}
       {photo ? (
         <div className="card__img-wrap">
-          <img src={photo.data} alt={fullName(profile)} className="card__img" />
+          <img src={photo.url} alt={fullName(profile)} className="card__img" />
           <div className="card__img-overlay">
             <button
               className="status-pill"

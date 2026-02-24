@@ -16,7 +16,7 @@ export default function ProfileDetail({ profile, onClose, onEdit }) {
         {/* ── Hero Area ── */}
         {hasPhotos ? (
           <div className="detail__hero-photo">
-            <img src={photos[activePhoto]?.data} alt={fullName(profile)} className="detail__hero-img" />
+            <img src={photos[activePhoto]?.url} alt={fullName(profile)} className="detail__hero-img" />
             <div className="detail__hero-gradient" />
             {isAdmin && profile.owner_name && (
               <span className="detail__owner-tag">{profile.owner_name}</span>
@@ -42,7 +42,7 @@ export default function ProfileDetail({ profile, onClose, onEdit }) {
                 {photos.map((p, i) => (
                   <img
                     key={p.id}
-                    src={p.data}
+                    src={p.url}
                     alt={`Photo ${i + 1}`}
                     className={`detail__thumb ${i === activePhoto ? 'detail__thumb--active' : ''}`}
                     onClick={() => setActivePhoto(i)}

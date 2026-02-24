@@ -19,7 +19,7 @@ export default function PhotoGallery({ profileId, photos, onPhotosChange, onToas
       <div className="photo-gallery__strip">
         {photos.map((photo, i) => (
           <div key={photo.id} className="photo-gallery__thumb">
-            <img src={photo.data} alt={photo.filename || 'Photo'} />
+            <img src={photo.url} alt={photo.filename || 'Photo'} />
             {i === 0 && <span className="photo-gallery__primary">Primary</span>}
             <button className="photo-gallery__delete" onClick={() => handleDelete(photo.id)}>&times;</button>
           </div>

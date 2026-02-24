@@ -12,6 +12,7 @@ export default function PhotoUploader({ profileId, photoCount, onPhotoAdded, onT
     const files = Array.from(e.target.files);
     e.target.value = '';
 
+    let uploaded = 0;
     for (const file of files) {
       if (!ACCEPTED_TYPES.includes(file.type)) {
         onToast('Only JPG, PNG, WEBP accepted', 'error');
@@ -30,12 +31,8 @@ export default function PhotoUploader({ profileId, photoCount, onPhotoAdded, onT
       setUploading((prev) => [...prev, tempId]);
 
       try {
-        const base64 = await readFileAsBase64(file);
-        const photo = await uploadPhoto(profileId, {
-          data: base64,
-          filename: file.name,
-          position: photoCount + files.indexOf(file),
-        });
+        const photo = await uploadPhoto(profileId, file, photoCount + uploaded);
+        uploaded++;
         onPhotoAdded(photo);
         onToast('Photo added \u2713', 'success');
       } catch {
@@ -56,13 +53,4 @@ export default function PhotoUploader({ profileId, photoCount, onPhotoAdded, onT
       {uploading.length > 0 && <span className="photo-uploader__spinner">Uploading...</span>}
     </div>
   );
-}
-
-function readFileAsBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
 }

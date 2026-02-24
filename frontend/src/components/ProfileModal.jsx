@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createProfile, updateProfile } from '../api/profiles';
 import { uploadPhoto } from '../api/photos';
 import { computeAge, randomAvatarColor, STATUS_OPTIONS, EDU_LEVELS, RASHI_OPTIONS } from '../utils/helpers';
@@ -21,22 +21,24 @@ const EMPTY = {
   linkedin: '', instagram: '',
 };
 
+const MAX_SIZE = 2 * 1024 * 1024;
+const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
 export default function ProfileModal({ profile, onClose, onSaved, onToast }) {
   const isEdit = !!profile?.id;
   const [form, setForm] = useState(EMPTY);
   const [photos, setPhotos] = useState([]);
   const [pendingPhotos, setPendingPhotos] = useState([]);
+  const pendingPhotosRef = useRef(pendingPhotos);
+  pendingPhotosRef.current = pendingPhotos;
   const [errors, setErrors] = useState({});
   const [saving, setSaving] = useState(false);
 
-  const MAX_SIZE = 2 * 1024 * 1024;
-  const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
-
-  const handlePendingFiles = async (e) => {
+  const handlePendingFiles = (e) => {
     const files = Array.from(e.target.files);
     e.target.value = '';
-    const remaining = 10 - pendingPhotos.length;
 
+    const valid = [];
     for (const file of files) {
       if (!ACCEPTED_TYPES.includes(file.type)) {
         onToast('Only JPG, PNG, WEBP accepted', 'error');
@@ -46,18 +48,30 @@ export default function ProfileModal({ profile, onClose, onSaved, onToast }) {
         onToast('Photo exceeds 2MB limit', 'error');
         continue;
       }
-      if (pendingPhotos.length + 1 > 10) {
-        onToast('Max 10 photos per profile', 'error');
-        break;
-      }
-
-      const base64 = await readFileAsBase64(file);
-      setPendingPhotos((prev) => [...prev, { data: base64, filename: file.name, id: Date.now() + Math.random() }]);
+      valid.push(file);
     }
+
+    setPendingPhotos((prev) => {
+      const remaining = 10 - prev.length;
+      if (valid.length > remaining) {
+        onToast('Max 10 photos per profile', 'error');
+      }
+      const toAdd = valid.slice(0, remaining).map((file) => ({
+        file,
+        preview: URL.createObjectURL(file),
+        filename: file.name,
+        id: Date.now() + Math.random(),
+      }));
+      return [...prev, ...toAdd];
+    });
   };
 
   const removePendingPhoto = (id) => {
-    setPendingPhotos((prev) => prev.filter((p) => p.id !== id));
+    setPendingPhotos((prev) => {
+      const removed = prev.find((p) => p.id === id);
+      if (removed?.preview) URL.revokeObjectURL(removed.preview);
+      return prev.filter((p) => p.id !== id);
+    });
   };
 
   useEffect(() => {
@@ -77,6 +91,14 @@ export default function ProfileModal({ profile, onClose, onSaved, onToast }) {
       setPhotos([]);
     }
   }, [profile]);
+
+  useEffect(() => {
+    return () => {
+      pendingPhotosRef.current.forEach((p) => {
+        if (p.preview) URL.revokeObjectURL(p.preview);
+      });
+    };
+  }, []);
 
   const set = (field) => (e) => {
     const val = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
@@ -110,11 +132,7 @@ export default function ProfileModal({ profile, onClose, onSaved, onToast }) {
         const created = await createProfile(payload);
         for (let i = 0; i < pendingPhotos.length; i++) {
           try {
-            await uploadPhoto(created.id, {
-              data: pendingPhotos[i].data,
-              filename: pendingPhotos[i].filename,
-              position: i,
-            });
+            await uploadPhoto(created.id, pendingPhotos[i].file, i);
           } catch {
             onToast(`Failed to upload ${pendingPhotos[i].filename}`, 'error');
           }
@@ -300,7 +318,7 @@ export default function ProfileModal({ profile, onClose, onSaved, onToast }) {
                   <div className="photo-gallery__strip">
                     {pendingPhotos.map((photo, i) => (
                       <div key={photo.id} className="photo-gallery__thumb">
-                        <img src={photo.data} alt={photo.filename || 'Photo'} />
+                        <img src={photo.preview} alt={photo.filename || 'Photo'} />
                         {i === 0 && <span className="photo-gallery__primary">Primary</span>}
                         <button className="photo-gallery__delete" onClick={() => removePendingPhoto(photo.id)}>&times;</button>
                       </div>
@@ -347,13 +365,4 @@ function Field({ label, error, children }) {
       {error && <span className="field__error">{error}</span>}
     </div>
   );
-}
-
-function readFileAsBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
 }

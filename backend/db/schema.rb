@@ -10,17 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_02_23_000006) do
+ActiveRecord::Schema[7.2].define(version: 2026_02_24_214244) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "profile_photos", force: :cascade do |t|
     t.bigint "profile_id", null: false
-    t.text "data", null: false
     t.string "filename"
     t.integer "position", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "url", null: false
     t.index ["profile_id"], name: "index_profile_photos_on_profile_id"
   end
 

@@ -36,7 +36,7 @@ export default function CompareView({ profiles, onClose }) {
                 <th key={p.id}>
                   <div className="compare-view__profile-header">
                     {p.photos?.[0] ? (
-                      <img src={p.photos[0].data} alt={fullName(p)} className="compare-view__avatar-img" />
+                      <img src={p.photos[0].url} alt={fullName(p)} className="compare-view__avatar-img" />
                     ) : (
                       <div className="compare-view__avatar" style={{ backgroundColor: p.avatar_color || '#7B1B1B' }}>
                         {initials(p)}

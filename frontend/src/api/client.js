@@ -6,8 +6,14 @@ async function request(path, options = {}) {
   const token = getToken();
   const authHeader = token ? { Authorization: `Bearer ${token}` } : {};
 
+  const isFormData = options.body instanceof FormData;
+
   const res = await fetch(`${BASE_URL}${path}`, {
-    headers: { 'Content-Type': 'application/json', ...authHeader, ...options.headers },
+    headers: {
+      ...authHeader,
+      ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
+      ...options.headers,
+    },
     ...options,
   });
   if (!res.ok) throw new Error(await res.text());

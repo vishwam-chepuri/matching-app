@@ -80,7 +80,14 @@ module Api
 
       def profile_json(profile)
         profile.as_json(methods: [:age]).merge(
-          'photos' => profile.photos.as_json(only: [:id, :data, :filename, :position]),
+          'photos' => profile.photos.map { |p|
+            {
+              id: p.id,
+              url: PhotoStorage.full_url(p.url),
+              filename: p.filename,
+              position: p.position
+            }
+          },
           'owner_name' => profile.user&.name || profile.user&.email
         )
       end
