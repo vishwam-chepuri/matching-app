@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { createProfile, updateProfile } from '../api/profiles';
+import { uploadPhoto } from '../api/photos';
 import { computeAge, randomAvatarColor, STATUS_OPTIONS, EDU_LEVELS, RASHI_OPTIONS } from '../utils/helpers';
 import PhotoUploader from './PhotoUploader';
 import PhotoGallery from './PhotoGallery';
@@ -24,8 +25,40 @@ export default function ProfileModal({ profile, onClose, onSaved, onToast }) {
   const isEdit = !!profile?.id;
   const [form, setForm] = useState(EMPTY);
   const [photos, setPhotos] = useState([]);
+  const [pendingPhotos, setPendingPhotos] = useState([]);
   const [errors, setErrors] = useState({});
   const [saving, setSaving] = useState(false);
+
+  const MAX_SIZE = 2 * 1024 * 1024;
+  const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
+  const handlePendingFiles = async (e) => {
+    const files = Array.from(e.target.files);
+    e.target.value = '';
+    const remaining = 10 - pendingPhotos.length;
+
+    for (const file of files) {
+      if (!ACCEPTED_TYPES.includes(file.type)) {
+        onToast('Only JPG, PNG, WEBP accepted', 'error');
+        continue;
+      }
+      if (file.size > MAX_SIZE) {
+        onToast('Photo exceeds 2MB limit', 'error');
+        continue;
+      }
+      if (pendingPhotos.length + 1 > 10) {
+        onToast('Max 10 photos per profile', 'error');
+        break;
+      }
+
+      const base64 = await readFileAsBase64(file);
+      setPendingPhotos((prev) => [...prev, { data: base64, filename: file.name, id: Date.now() + Math.random() }]);
+    }
+  };
+
+  const removePendingPhoto = (id) => {
+    setPendingPhotos((prev) => prev.filter((p) => p.id !== id));
+  };
 
   useEffect(() => {
     if (profile) {
@@ -74,7 +107,18 @@ export default function ProfileModal({ profile, onClose, onSaved, onToast }) {
       if (isEdit) {
         await updateProfile(profile.id, payload);
       } else {
-        await createProfile(payload);
+        const created = await createProfile(payload);
+        for (let i = 0; i < pendingPhotos.length; i++) {
+          try {
+            await uploadPhoto(created.id, {
+              data: pendingPhotos[i].data,
+              filename: pendingPhotos[i].filename,
+              position: i,
+            });
+          } catch {
+            onToast(`Failed to upload ${pendingPhotos[i].filename}`, 'error');
+          }
+        }
       }
       onToast('Profile saved \u2713', 'success');
       onSaved();
@@ -247,6 +291,32 @@ export default function ProfileModal({ profile, onClose, onSaved, onToast }) {
               />
             </Section>
           )}
+
+          {!isEdit && (
+            <Section title="Photos">
+              {pendingPhotos.length > 0 && (
+                <div className="photo-gallery">
+                  <p className="photo-gallery__count">{pendingPhotos.length} / 10 photos</p>
+                  <div className="photo-gallery__strip">
+                    {pendingPhotos.map((photo, i) => (
+                      <div key={photo.id} className="photo-gallery__thumb">
+                        <img src={photo.data} alt={photo.filename || 'Photo'} />
+                        {i === 0 && <span className="photo-gallery__primary">Primary</span>}
+                        <button className="photo-gallery__delete" onClick={() => removePendingPhoto(photo.id)}>&times;</button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              <div className="photo-uploader">
+                <label className="btn btn--secondary photo-uploader__btn">
+                  Add Photos
+                  <input type="file" accept="image/*" multiple hidden onChange={handlePendingFiles} />
+                </label>
+                <span className="photo-uploader__hint">{10 - pendingPhotos.length} remaining</span>
+              </div>
+            </Section>
+          )}
         </div>
 
         <div className="profile-modal__footer">
@@ -277,4 +347,13 @@ function Field({ label, error, children }) {
       {error && <span className="field__error">{error}</span>}
     </div>
   );
+}
+
+function readFileAsBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
 }
