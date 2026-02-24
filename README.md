@@ -25,7 +25,7 @@ repo-root/
 - PostgreSQL 16+
 - Rails 7.1+
 
-### Backend (localhost:3000)
+### Backend (localhost:3001)
 
 ```bash
 cd backend
