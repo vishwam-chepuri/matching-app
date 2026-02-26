@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { uploadPhoto } from '../api/photos';
 
-const MAX_SIZE = 2 * 1024 * 1024; // 2MB
+const MAX_SIZE = 6 * 1024 * 1024; // 6MB
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 export default function PhotoUploader({ profileId, photoCount, onPhotoAdded, onToast }) {
@@ -19,7 +19,7 @@ export default function PhotoUploader({ profileId, photoCount, onPhotoAdded, onT
         continue;
       }
       if (file.size > MAX_SIZE) {
-        onToast('Photo exceeds 2MB limit', 'error');
+        onToast('Photo exceeds 6MB limit', 'error');
         continue;
       }
       if (remaining <= 0) {

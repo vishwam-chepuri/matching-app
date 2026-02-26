@@ -36,7 +36,7 @@ export default function ProfileDetail({ profile, onClose, onEdit }) {
               <button className="btn btn--primary btn--small" onClick={() => onEdit(profile)}>Edit</button>
               <button className="detail__close-btn" onClick={onClose}>&times;</button>
             </div>
-            {/* Thumbnail strip */}
+            {/* Thumbnail strip — bottom-right overlay */}
             {photos.length > 1 && (
               <div className="detail__thumb-strip">
                 {photos.map((p, i) => (

@@ -21,7 +21,7 @@ const EMPTY = {
   linkedin: '', instagram: '',
 };
 
-const MAX_SIZE = 2 * 1024 * 1024;
+const MAX_SIZE = 6 * 1024 * 1024;
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 export default function ProfileModal({ profile, onClose, onSaved, onToast }) {
@@ -33,6 +33,9 @@ export default function ProfileModal({ profile, onClose, onSaved, onToast }) {
   pendingPhotosRef.current = pendingPhotos;
   const [errors, setErrors] = useState({});
   const [saving, setSaving] = useState(false);
+  const [ftVal, setFtVal] = useState('');
+  const [inVal, setInVal] = useState('');
+  const [cmVal, setCmVal] = useState('');
 
   const handlePendingFiles = (e) => {
     const files = Array.from(e.target.files);
@@ -45,7 +48,7 @@ export default function ProfileModal({ profile, onClose, onSaved, onToast }) {
         continue;
       }
       if (file.size > MAX_SIZE) {
-        onToast('Photo exceeds 2MB limit', 'error');
+        onToast('Photo exceeds 6MB limit', 'error');
         continue;
       }
       valid.push(file);
@@ -90,7 +93,29 @@ export default function ProfileModal({ profile, onClose, onSaved, onToast }) {
       setForm({ ...EMPTY, avatar_color: randomAvatarColor() });
       setPhotos([]);
     }
+    initHeightInputs(profile?.height_cm ?? null);
   }, [profile]);
+
+  // Populate all three height fields from a cm value (or clear them)
+  function initHeightInputs(cm) {
+    if (cm != null && cm !== '') {
+      const { ft, inn } = cmToFtInParts(cm);
+      setFtVal(String(ft));
+      setInVal(String(inn));
+      setCmVal(String(cm));
+    } else {
+      setFtVal(''); setInVal(''); setCmVal('');
+    }
+  }
+
+  // cm → { ft, inn } with inch-overflow guard
+  function cmToFtInParts(cm) {
+    const totalInches = Number(cm) / 2.54;
+    const ft = Math.floor(totalInches / 12);
+    let inn = Math.round(totalInches % 12);
+    if (inn === 12) { return { ft: ft + 1, inn: 0 }; }
+    return { ft, inn };
+  }
 
   useEffect(() => {
     return () => {
@@ -104,6 +129,52 @@ export default function ProfileModal({ profile, onClose, onSaved, onToast }) {
     const val = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
     setForm((f) => ({ ...f, [field]: val }));
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: '' }));
+  };
+
+  const handleFtChange = (e) => {
+    const val = e.target.value;
+    setFtVal(val);
+    const ft = val === '' ? 0 : parseFloat(val);
+    const inn = inVal === '' ? 0 : parseFloat(inVal);
+    if (val === '' && inVal === '') {
+      setCmVal('');
+      setForm(f => ({ ...f, height_cm: '' }));
+    } else if (!isNaN(ft)) {
+      const cm = Math.round((ft * 12 + (isNaN(inn) ? 0 : inn)) * 2.54);
+      setCmVal(String(cm));
+      setForm(f => ({ ...f, height_cm: String(cm) }));
+    }
+  };
+
+  const handleInChange = (e) => {
+    const val = e.target.value;
+    setInVal(val);
+    const ft = ftVal === '' ? 0 : parseFloat(ftVal);
+    const inn = val === '' ? 0 : parseFloat(val);
+    if (ftVal === '' && val === '') {
+      setCmVal('');
+      setForm(f => ({ ...f, height_cm: '' }));
+    } else if (!isNaN(inn)) {
+      const cm = Math.round(((isNaN(ft) ? 0 : ft) * 12 + inn) * 2.54);
+      setCmVal(String(cm));
+      setForm(f => ({ ...f, height_cm: String(cm) }));
+    }
+  };
+
+  const handleCmChange = (e) => {
+    const val = e.target.value;
+    setCmVal(val);
+    if (val === '') {
+      setFtVal(''); setInVal('');
+      setForm(f => ({ ...f, height_cm: '' }));
+      return;
+    }
+    const cm = parseFloat(val);
+    if (isNaN(cm) || cm <= 0) return;
+    const { ft, inn } = cmToFtInParts(cm);
+    setFtVal(String(ft));
+    setInVal(String(inn));
+    setForm(f => ({ ...f, height_cm: String(Math.round(cm)) }));
   };
 
   const validate = () => {
@@ -169,8 +240,40 @@ export default function ProfileModal({ profile, onClose, onSaved, onToast }) {
               <input type="date" value={form.date_of_birth} onChange={set('date_of_birth')} />
               {age !== null && <span className="field-hint">Age: {age} years</span>}
             </Field>
-            <Field label="Height (cm)">
-              <input type="number" value={form.height_cm} onChange={set('height_cm')} />
+            <Field label="Height">
+              <div className="height-input">
+                <div className="height-input__imperial">
+                  <input
+                    type="number"
+                    min="0" max="9"
+                    value={ftVal}
+                    onChange={handleFtChange}
+                    placeholder="5"
+                    className="height-input__ft"
+                  />
+                  <span className="height-input__sym">'</span>
+                  <input
+                    type="number"
+                    min="0" max="11"
+                    value={inVal}
+                    onChange={handleInChange}
+                    placeholder="7"
+                    className="height-input__in"
+                  />
+                  <span className="height-input__sym">"</span>
+                </div>
+                <div className="height-input__metric">
+                  <input
+                    type="number"
+                    min="0"
+                    value={cmVal}
+                    onChange={handleCmChange}
+                    placeholder="170"
+                    className="height-input__cm"
+                  />
+                  <span className="height-input__sym">cm</span>
+                </div>
+              </div>
             </Field>
           </Section>
 
@@ -270,7 +373,7 @@ export default function ProfileModal({ profile, onClose, onSaved, onToast }) {
             <Field label="Meeting Date">
               <input type="date" value={form.meeting_date} onChange={set('meeting_date')} />
             </Field>
-            <Field label="Notes">
+            <Field label="Notes" full>
               <textarea rows={3} value={form.notes} onChange={set('notes')} />
             </Field>
           </Section>
@@ -357,9 +460,9 @@ function Section({ title, children }) {
   );
 }
 
-function Field({ label, error, children }) {
+function Field({ label, error, full, children }) {
   return (
-    <div className="field">
+    <div className={full ? 'field field--full' : 'field'}>
       {label && <label className="field__label">{label}</label>}
       {children}
       {error && <span className="field__error">{error}</span>}

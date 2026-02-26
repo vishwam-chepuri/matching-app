@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { fullName, initials, cmToFtIn, formatPackage, formatDOB, STATUS_OPTIONS, STATUS_COLORS } from '../utils/helpers';
 import { useAuth } from '../context/AuthContext';
 import { LinkedInIcon, InstagramIcon } from './SocialIcons';
@@ -9,8 +10,22 @@ export default function ProfileCard({
   compareMode, isSelected, onToggleCompare,
 }) {
   const { isAdmin } = useAuth();
-  const photo = profile.photos?.[0];
-  const hasPhotos = profile.photos?.length > 0;
+  const photos = profile.photos || [];
+  const hasPhotos = photos.length > 0;
+
+  // Auto-carousel state
+  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+
+  // Cycle through photos every 5 seconds
+  useEffect(() => {
+    if (photos.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentPhotoIndex(i => (i + 1) % photos.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [photos.length]);
+
+  const photo = photos[currentPhotoIndex] || photos[0];
 
   // Context menu state (right-click / long-press)
   const [contextMenu, setContextMenu] = useState(null); // { x, y }
@@ -104,183 +119,202 @@ export default function ProfileCard({
   const statusColor = STATUS_COLORS[profile.status] || '#6B7280';
 
   return (
-    <div
-      ref={cardRef}
-      className="card"
-      onClick={handleCardClick}
-      onContextMenu={handleContextMenu}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-      onTouchMove={handleTouchMove}
-    >
-      {compareMode && (
-        <label className="card__checkbox" onClick={(e) => e.stopPropagation()}>
-          <input type="checkbox" checked={isSelected} onChange={() => onToggleCompare(profile.id)} />
-        </label>
-      )}
+    <>
+      <div
+        ref={cardRef}
+        className="card"
+        onClick={handleCardClick}
+        onContextMenu={handleContextMenu}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        onTouchMove={handleTouchMove}
+      >
+        {compareMode && (
+          <label className="card__checkbox" onClick={(e) => e.stopPropagation()}>
+            <input type="checkbox" checked={isSelected} onChange={() => onToggleCompare(profile.id)} />
+          </label>
+        )}
 
-      {isAdmin && profile.owner_name && (
-        <span className={`card__owner-tag${compareMode ? ' card__owner-tag--compare' : ''}`}>{profile.owner_name}</span>
-      )}
+        {isAdmin && profile.owner_name && (
+          <span className={`card__owner-tag${compareMode ? ' card__owner-tag--compare' : ''}`}>{profile.owner_name}</span>
+        )}
 
-      {/* ── Visual Top: Photo or Gradient Banner ── */}
-      {photo ? (
-        <div className="card__img-wrap">
-          <img src={photo.url} alt={fullName(profile)} className="card__img" />
-          <div className="card__img-overlay">
+        {/* ── Visual Top: Photo or Gradient Banner ── */}
+        {photo ? (
+          <div className="card__img-wrap">
+            <img
+              src={photo.url}
+              alt={fullName(profile)}
+              className="card__img"
+              onContextMenu={(e) => e.preventDefault()}
+              draggable={false}
+            />
+            <div className="card__img-overlay">
+              <button
+                className="status-pill"
+                style={{ backgroundColor: statusColor }}
+                onClick={handleStatusClick}
+              >
+                {profile.status}
+              </button>
+              {hasPhotos && photos.length > 1 && (
+                <span className="card__photo-count">{'\uD83D\uDCF7'} {photos.length}</span>
+              )}
+            </div>
+            {/* Carousel dots */}
+            {photos.length > 1 && (
+              <div className="card__carousel-dots">
+                {photos.map((_, i) => (
+                  <span
+                    key={i}
+                    className={`card__carousel-dot${i === currentPhotoIndex ? ' card__carousel-dot--active' : ''}`}
+                  />
+                ))}
+              </div>
+            )}
             <button
-              className="status-pill"
-              style={{ backgroundColor: statusColor }}
-              onClick={handleStatusClick}
+              className={`card__star ${profile.starred ? 'card__star--active' : ''}${isAdmin ? ' card__star--readonly' : ''}`}
+              onClick={(e) => { e.stopPropagation(); if (!isAdmin) onToggleStar(profile.id, !profile.starred); }}
+              disabled={isAdmin}
+              title={isAdmin ? 'Favouriting is only for the profile owner' : undefined}
             >
-              {profile.status}
+              {profile.starred ? '\u2B50' : '\u2606'}
             </button>
-            {hasPhotos && profile.photos.length > 1 && (
-              <span className="card__photo-count">{'\uD83D\uDCF7'} {profile.photos.length}</span>
+          </div>
+        ) : (
+          <div className="card__banner" style={{ '--avatar-bg': profile.avatar_color || '#7B1B1B' }}>
+            <div className="card__banner-deco" />
+            <div className="card__avatar">
+              {initials(profile)}
+            </div>
+            <div className="card__banner-meta">
+              <button
+                className="status-pill"
+                style={{ backgroundColor: statusColor }}
+                onClick={handleStatusClick}
+              >
+                {profile.status}
+              </button>
+            </div>
+            <button
+              className={`card__star card__star--on-banner ${profile.starred ? 'card__star--active' : ''}${isAdmin ? ' card__star--readonly' : ''}`}
+              onClick={(e) => { e.stopPropagation(); if (!isAdmin) onToggleStar(profile.id, !profile.starred); }}
+              disabled={isAdmin}
+              title={isAdmin ? 'Favouriting is only for the profile owner' : undefined}
+            >
+              {profile.starred ? '\u2B50' : '\u2606'}
+            </button>
+          </div>
+        )}
+
+        {/* ── Status Dropdown ── */}
+        {statusDropdown && (
+          <div className="status-dropdown" onClick={(e) => e.stopPropagation()}>
+            {STATUS_OPTIONS.map((s) => (
+              <button
+                key={s}
+                className={`status-dropdown__item ${s === profile.status ? 'status-dropdown__item--active' : ''}`}
+                style={{ '--status-color': STATUS_COLORS[s] || '#6B7280' }}
+                onClick={() => handleStatusSelect(s)}
+              >
+                <span className="status-dropdown__dot" />
+                {s}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* ── Card Body ── */}
+        <div className="card__body">
+          <div className="card__name-row">
+            <h3 className="card__name">{fullName(profile)}</h3>
+            {(profile.linkedin || profile.instagram) && (
+              <div className="card__socials" onClick={(e) => e.stopPropagation()}>
+                {profile.linkedin && (
+                  <a
+                    href={profile.linkedin.startsWith('http') ? profile.linkedin : `https://${profile.linkedin}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="card__social-link card__social-link--linkedin"
+                    title="LinkedIn"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <LinkedInIcon />
+                  </a>
+                )}
+                {profile.instagram && (
+                  <a
+                    href={`https://instagram.com/${profile.instagram.replace('@', '')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="card__social-link card__social-link--instagram"
+                    title={profile.instagram.startsWith('@') ? profile.instagram : `@${profile.instagram}`}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <InstagramIcon />
+                  </a>
+                )}
+              </div>
             )}
           </div>
-          <button
-            className={`card__star ${profile.starred ? 'card__star--active' : ''}${isAdmin ? ' card__star--readonly' : ''}`}
-            onClick={(e) => { e.stopPropagation(); if (!isAdmin) onToggleStar(profile.id, !profile.starred); }}
-            disabled={isAdmin}
-            title={isAdmin ? 'Favouriting is only for the profile owner' : undefined}
-          >
-            {profile.starred ? '\u2B50' : '\u2606'}
-          </button>
-        </div>
-      ) : (
-        <div className="card__banner" style={{ '--avatar-bg': profile.avatar_color || '#7B1B1B' }}>
-          <div className="card__banner-deco" />
-          <div className="card__avatar">
-            {initials(profile)}
-          </div>
-          <div className="card__banner-meta">
-            <button
-              className="status-pill"
-              style={{ backgroundColor: statusColor }}
-              onClick={handleStatusClick}
-            >
-              {profile.status}
-            </button>
-          </div>
-          <button
-            className={`card__star card__star--on-banner ${profile.starred ? 'card__star--active' : ''}${isAdmin ? ' card__star--readonly' : ''}`}
-            onClick={(e) => { e.stopPropagation(); if (!isAdmin) onToggleStar(profile.id, !profile.starred); }}
-            disabled={isAdmin}
-            title={isAdmin ? 'Favouriting is only for the profile owner' : undefined}
-          >
-            {profile.starred ? '\u2B50' : '\u2606'}
-          </button>
-        </div>
-      )}
 
-      {/* ── Status Dropdown ── */}
-      {statusDropdown && (
-        <div className="status-dropdown" onClick={(e) => e.stopPropagation()}>
-          {STATUS_OPTIONS.map((s) => (
-            <button
-              key={s}
-              className={`status-dropdown__item ${s === profile.status ? 'status-dropdown__item--active' : ''}`}
-              style={{ '--status-color': STATUS_COLORS[s] || '#6B7280' }}
-              onClick={() => handleStatusSelect(s)}
-            >
-              <span className="status-dropdown__dot" />
-              {s}
-            </button>
-          ))}
-        </div>
-      )}
+          {/* Key stats row */}
+          <div className="card__stats">
+            <span className="card__stat">{profile.age} yrs</span>
+            {profile.height_cm && <span className="card__stat">{cmToFtIn(profile.height_cm)}</span>}
+            {profile.package && <span className="card__stat card__stat--gold">{formatPackage(profile.package)}</span>}
+          </div>
 
-      {/* ── Card Body ── */}
-      <div className="card__body">
-        <div className="card__name-row">
-          <h3 className="card__name">{fullName(profile)}</h3>
-          {(profile.linkedin || profile.instagram) && (
-            <div className="card__socials" onClick={(e) => e.stopPropagation()}>
-              {profile.linkedin && (
+          <p className="card__dob">{formatDOB(profile.date_of_birth)}</p>
+
+          {/* Info lines */}
+          <div className="card__info">
+            <div className="card__info-row">
+              <span className="card__icon">{'\uD83D\uDCCD'}</span>
+              <span>{profile.city}{profile.state ? `, ${profile.state}` : ''}</span>
+            </div>
+            {(profile.profession_title || profile.edu_level) && (
+              <div className="card__info-row">
+                <span className="card__icon">{'\uD83C\uDF93'}</span>
+                <span>{[profile.edu_level, profile.profession_title].filter(Boolean).join(' \u00B7 ')}</span>
+              </div>
+            )}
+            {(profile.company || profile.company_location) && (
+              <div className="card__info-row">
+                <span className="card__icon">{'\uD83C\uDFE2'}</span>
+                <span>{[profile.company, profile.company_location].filter(Boolean).join(' \u00B7 ')}</span>
+              </div>
+            )}
+            {profile.caste && (
+              <div className="card__info-row">
+                <span className="card__icon">{'\uD83D\uDD49\uFE0F'}</span>
+                <span>{profile.caste}{profile.rashi ? ` \u00B7 ${profile.rashi}` : ''}</span>
+              </div>
+            )}
+            {profile.phone && (
+              <div className="card__info-row">
+                <span className="card__icon">{'📞'}</span>
                 <a
-                  href={profile.linkedin.startsWith('http') ? profile.linkedin : `https://${profile.linkedin}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="card__social-link card__social-link--linkedin"
-                  title="LinkedIn"
+                  href={`tel:${profile.phone}`}
+                  className="card__phone-link"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <LinkedInIcon />
+                  {profile.phone}
                 </a>
-              )}
-              {profile.instagram && (
-                <a
-                  href={`https://instagram.com/${profile.instagram.replace('@', '')}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="card__social-link card__social-link--instagram"
-                  title={profile.instagram.startsWith('@') ? profile.instagram : `@${profile.instagram}`}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <InstagramIcon />
-                </a>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Key stats row */}
-        <div className="card__stats">
-          <span className="card__stat">{profile.age} yrs</span>
-          {profile.height_cm && <span className="card__stat">{cmToFtIn(profile.height_cm)}</span>}
-          {profile.package && <span className="card__stat card__stat--gold">{formatPackage(profile.package)}</span>}
-        </div>
-
-        <p className="card__dob">{formatDOB(profile.date_of_birth)}</p>
-
-        {/* Info lines */}
-        <div className="card__info">
-          <div className="card__info-row">
-            <span className="card__icon">{'\uD83D\uDCCD'}</span>
-            <span>{profile.city}{profile.state ? `, ${profile.state}` : ''}</span>
+              </div>
+            )}
           </div>
-          {(profile.profession_title || profile.edu_level) && (
-            <div className="card__info-row">
-              <span className="card__icon">{'\uD83C\uDF93'}</span>
-              <span>{[profile.edu_level, profile.profession_title].filter(Boolean).join(' \u00B7 ')}</span>
-            </div>
-          )}
-          {(profile.company || profile.company_location) && (
-            <div className="card__info-row">
-              <span className="card__icon">{'\uD83C\uDFE2'}</span>
-              <span>{[profile.company, profile.company_location].filter(Boolean).join(' \u00B7 ')}</span>
-            </div>
-          )}
-          {profile.caste && (
-            <div className="card__info-row">
-              <span className="card__icon">{'\uD83D\uDD49\uFE0F'}</span>
-              <span>{profile.caste}{profile.rashi ? ` \u00B7 ${profile.rashi}` : ''}</span>
-            </div>
-          )}
-          {profile.phone && (
-            <div className="card__info-row">
-              <span className="card__icon">{'📞'}</span>
-              <a
-                href={`tel:${profile.phone}`}
-                className="card__phone-link"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {profile.phone}
-              </a>
-            </div>
+
+          {profile.notes && (
+            <p className="card__notes">
+              {profile.notes.length > 80 ? profile.notes.slice(0, 80) + '\u2026' : profile.notes}
+            </p>
           )}
         </div>
-
-        {profile.notes && (
-          <p className="card__notes">
-            {profile.notes.length > 80 ? profile.notes.slice(0, 80) + '\u2026' : profile.notes}
-          </p>
-        )}
       </div>
 
-      {/* ── Context Menu (right-click / long-press) ── */}
-      {contextMenu && (
+      {/* ── Context Menu (right-click / long-press) — rendered via portal to avoid CSS transform issues ── */}
+      {contextMenu && createPortal(
         <div
           className="card__context-menu"
           style={{ top: contextMenu.y, left: contextMenu.x }}
@@ -292,8 +326,9 @@ export default function ProfileCard({
           <button className="card__context-item card__context-item--danger" onClick={handleDelete}>
             <span>{'\uD83D\uDDD1\uFE0F'}</span> Delete
           </button>
-        </div>
+        </div>,
+        document.body
       )}
-    </div>
+    </>
   );
 }

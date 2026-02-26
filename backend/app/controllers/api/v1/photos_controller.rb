@@ -4,7 +4,7 @@ module Api
       before_action :set_profile
 
       ALLOWED_CONTENT_TYPES = %w[image/jpeg image/png image/webp].freeze
-      MAX_FILE_SIZE = 2.megabytes
+      MAX_FILE_SIZE = 6.megabytes
 
       def create
         file = params[:file]
@@ -18,7 +18,7 @@ module Api
         end
 
         if file.size > MAX_FILE_SIZE
-          return render json: { error: "File size must be under 2MB" }, status: :unprocessable_entity
+          return render json: { error: "File size must be under 6MB" }, status: :unprocessable_entity
         end
 
         url = PhotoStorage.save(file, file.original_filename)
