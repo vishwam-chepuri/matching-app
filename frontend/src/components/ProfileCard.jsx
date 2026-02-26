@@ -271,7 +271,7 @@ export default function ProfileCard({
           <div className="card__info">
             <div className="card__info-row">
               <span className="card__icon">{'\uD83D\uDCCD'}</span>
-              <span>{profile.city}{profile.state ? `, ${profile.state}` : ''}</span>
+              <span>{profile.city}{profile.district ? `, ${profile.district}` : ''}</span>
             </div>
             {(profile.profession_title || profile.edu_level) && (
               <div className="card__info-row">

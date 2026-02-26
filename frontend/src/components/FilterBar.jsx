@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { STATUS_OPTIONS, EDU_LEVELS } from '../utils/helpers';
+import { STATUS_OPTIONS } from '../utils/helpers';
 
 export default function FilterBar({ filters, setFilters, profiles, viewMode, onViewMode, sortBy, sortDir, onSortChange }) {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const uniqueCastes = [...new Set(profiles.map((p) => p.caste).filter(Boolean))].sort();
+  const uniqueEduLevels = [...new Set(profiles.map((p) => p.edu_level).filter(Boolean))].sort();
   const uniqueWorkCities = [...new Set(profiles.map((p) => p.company_location).filter(Boolean))].sort();
   const uniqueNativeCities = [...new Set(profiles.map((p) => p.city).filter(Boolean))].sort();
 
@@ -133,7 +134,7 @@ export default function FilterBar({ filters, setFilters, profiles, viewMode, onV
             </select>
             <select value={filters.edu_level} onChange={set('edu_level')}>
               <option value="">Education</option>
-              {EDU_LEVELS.map((e) => <option key={e} value={e}>{e}</option>)}
+              {uniqueEduLevels.map((e) => <option key={e} value={e}>{e}</option>)}
             </select>
             <select value={filters.caste} onChange={set('caste')}>
               <option value="">Caste</option>

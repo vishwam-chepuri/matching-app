@@ -8,6 +8,8 @@ class Profile < ApplicationRecord
 
   validates :first_name, :last_name, :date_of_birth, :city, presence: true
 
+  before_create { self.added_date ||= Date.today }
+
   def age
     ((Date.today - date_of_birth) / 365.25).floor
   end

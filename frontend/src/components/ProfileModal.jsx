@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { createProfile, updateProfile } from '../api/profiles';
 import { uploadPhoto } from '../api/photos';
-import { computeAge, randomAvatarColor, STATUS_OPTIONS, EDU_LEVELS, RASHI_OPTIONS } from '../utils/helpers';
+import { computeAge, randomAvatarColor, STATUS_OPTIONS, RASHI_OPTIONS } from '../utils/helpers';
 import PhotoUploader from './PhotoUploader';
 import PhotoGallery from './PhotoGallery';
 
@@ -11,13 +11,13 @@ const SOURCE_OPTIONS = [
 
 const EMPTY = {
   first_name: '', last_name: '', date_of_birth: '', height_cm: '',
-  city: '', state: '', caste: '', subcaste: '',
+  city: '', district: '', caste: '', subcaste: '',
   edu_level: '', edu_field: '', edu_institution: '',
   profession_title: '', company: '', company_location: '', package: '',
   fathers_name: '', fathers_occupation: '', mothers_name: '', mothers_occupation: '', siblings: '',
   rashi: '', nakshatra: '', gotra: '',
   status: 'New', starred: false, notes: '',  avatar_color: '',
-  source: '', phone: '', meeting_date: '',
+  source: '', phone: '', meeting_date: '', added_date: '',
   linkedin: '', instagram: '',
 };
 
@@ -195,7 +195,7 @@ export default function ProfileModal({ profile, onClose, onSaved, onToast }) {
         ...form,
         height_cm: form.height_cm === '' ? null : Number(form.height_cm),
         package: form.package === '' ? null : Number(form.package),
-        siblings: form.siblings === '' ? null : Number(form.siblings),
+        siblings: form.siblings === '' ? null : form.siblings,
       };
       if (isEdit) {
         await updateProfile(profile.id, payload);
@@ -281,8 +281,8 @@ export default function ProfileModal({ profile, onClose, onSaved, onToast }) {
             <Field label="City *" error={errors.city}>
               <input value={form.city} onChange={set('city')} />
             </Field>
-            <Field label="State">
-              <input value={form.state} onChange={set('state')} />
+            <Field label="District">
+              <input value={form.district} onChange={set('district')} />
             </Field>
           </Section>
 
@@ -297,10 +297,7 @@ export default function ProfileModal({ profile, onClose, onSaved, onToast }) {
 
           <Section title="Education">
             <Field label="Education Level">
-              <select value={form.edu_level} onChange={set('edu_level')}>
-                <option value="">Select...</option>
-                {EDU_LEVELS.map((e) => <option key={e} value={e}>{e}</option>)}
-              </select>
+              <input value={form.edu_level} onChange={set('edu_level')} />
             </Field>
             <Field label="Field of Study">
               <input value={form.edu_field} onChange={set('edu_field')} />
@@ -339,7 +336,7 @@ export default function ProfileModal({ profile, onClose, onSaved, onToast }) {
               <input value={form.mothers_occupation} onChange={set('mothers_occupation')} />
             </Field>
             <Field label="Siblings">
-              <input type="number" value={form.siblings} onChange={set('siblings')} />
+              <input value={form.siblings} onChange={set('siblings')} />
             </Field>
           </Section>
 
@@ -372,6 +369,9 @@ export default function ProfileModal({ profile, onClose, onSaved, onToast }) {
             </Field>
             <Field label="Meeting Date">
               <input type="date" value={form.meeting_date} onChange={set('meeting_date')} />
+            </Field>
+            <Field label="Added Date">
+              <input type="date" value={form.added_date} onChange={set('added_date')} />
             </Field>
             <Field label="Notes" full>
               <textarea rows={3} value={form.notes} onChange={set('notes')} />

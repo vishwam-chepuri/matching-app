@@ -225,7 +225,7 @@ export default function ProfileTable({
 
                   {/* ── Native City ── */}
                   <td className="tbl__td">
-                    {[p.city, p.state].filter(Boolean).join(', ') || <span className="tbl__null">—</span>}
+                    {[p.city, p.district].filter(Boolean).join(', ') || <span className="tbl__null">—</span>}
                   </td>
 
                   {/* ── Work City ── */}

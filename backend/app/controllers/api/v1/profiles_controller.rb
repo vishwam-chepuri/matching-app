@@ -23,7 +23,7 @@ module Api
         when 'status'
           profiles.order(status: sort_dir)
         else
-          profiles.order(created_at: :desc)
+          profiles.order(added_date: sort_dir, created_at: sort_dir)
         end
 
         render json: profiles.map { |p| profile_json(p) }
@@ -67,13 +67,13 @@ module Api
       def profile_params
         params.require(:profile).permit(
           :first_name, :last_name, :date_of_birth, :height_cm,
-          :city, :state, :caste, :subcaste,
+          :city, :district, :caste, :subcaste,
           :edu_level, :edu_field, :edu_institution,
           :profession_title, :company, :company_location, :package,
           :fathers_name, :fathers_occupation, :mothers_name, :mothers_occupation, :siblings,
           :rashi, :nakshatra, :gotra,
           :status, :starred, :notes, :avatar_color,
-          :source, :phone, :meeting_date,
+          :source, :phone, :meeting_date, :added_date,
           :linkedin, :instagram
         )
       end

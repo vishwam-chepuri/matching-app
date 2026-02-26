@@ -28,7 +28,7 @@ export default function ProfileDetail({ profile, onClose, onEdit }) {
               </h2>
               <p className="detail__tagline">
                 {profile.age} yrs{profile.height_cm ? ` \u00B7 ${cmToFtIn(profile.height_cm)}` : ''}
-                {' \u00B7 '}{profile.city}{profile.state ? `, ${profile.state}` : ''}
+                {' \u00B7 '}{profile.city}{profile.district ? `, ${profile.district}` : ''}
               </p>
             </div>
             <div className="detail__hero-actions">
@@ -68,7 +68,7 @@ export default function ProfileDetail({ profile, onClose, onEdit }) {
                 </h2>
                 <p className="detail__tagline detail__tagline--on-banner">
                   {profile.age} yrs{profile.height_cm ? ` \u00B7 ${cmToFtIn(profile.height_cm)}` : ''}
-                  {' \u00B7 '}{profile.city}{profile.state ? `, ${profile.state}` : ''}
+                  {' \u00B7 '}{profile.city}{profile.district ? `, ${profile.district}` : ''}
                 </p>
               </div>
             </div>
@@ -87,6 +87,7 @@ export default function ProfileDetail({ profile, onClose, onEdit }) {
           {profile.package && <StatChip label="Package" value={formatPackage(profile.package)} highlight />}
           <StatChip label="DOB" value={formatDOB(profile.date_of_birth)} />
           {profile.meeting_date && <StatChip label="Meeting" value={formatDOB(profile.meeting_date)} accent />}
+          {profile.added_date && <StatChip label="Added" value={formatDOB(profile.added_date)} />}
         </div>
 
         {/* ── Detail Body ── */}
@@ -95,7 +96,7 @@ export default function ProfileDetail({ profile, onClose, onEdit }) {
             <div className="detail__col">
               <DetailSection icon={'\uD83D\uDCCD'} title="Location">
                 <DetailRow label="City" value={profile.city} />
-                <DetailRow label="State" value={profile.state} />
+                <DetailRow label="District" value={profile.district} />
               </DetailSection>
 
               <DetailSection icon={'\uD83D\uDD49\uFE0F'} title="Background">

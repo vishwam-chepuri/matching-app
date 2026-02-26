@@ -60,10 +60,6 @@ export const STATUS_COLORS = {
   'Rejected': '#DC2626',
 };
 
-export const EDU_LEVELS = [
-  'High School', "Bachelor's", "Master's", 'PhD', 'Professional (MD/JD/CA)',
-];
-
 export const RASHI_OPTIONS = [
   'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo',
   'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces',

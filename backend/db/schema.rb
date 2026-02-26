@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_02_24_214244) do
+ActiveRecord::Schema[7.2].define(version: 2026_02_27_000003) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -30,7 +30,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_24_214244) do
     t.date "date_of_birth", null: false
     t.integer "height_cm"
     t.string "city"
-    t.string "state"
+    t.string "district"
     t.string "caste"
     t.string "subcaste"
     t.string "edu_level"
@@ -42,7 +42,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_24_214244) do
     t.decimal "package", precision: 10, scale: 2
     t.string "fathers_occupation"
     t.string "mothers_occupation"
-    t.integer "siblings"
+    t.string "siblings"
     t.string "rashi"
     t.string "nakshatra"
     t.string "gotra"
@@ -61,6 +61,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_24_214244) do
     t.date "meeting_date"
     t.string "linkedin"
     t.string "instagram"
+    t.date "added_date"
     t.index ["user_id"], name: "index_profiles_on_user_id"
   end
 
