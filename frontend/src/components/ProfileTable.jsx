@@ -42,7 +42,7 @@ function applySortTable(profiles, col, dir) {
       case 'native':    va = (a.city || '').toLowerCase(); vb = (b.city || '').toLowerCase(); break;
       case 'work_city': va = (a.company_location || '').toLowerCase(); vb = (b.company_location || '').toLowerCase(); break;
       case 'package':   va = Number(a.package) || -Infinity; vb = Number(b.package) || -Infinity; break;
-      case 'added_by':  va = (a.added_by || '').toLowerCase(); vb = (b.added_by || '').toLowerCase(); break;
+      case 'added_by':  va = (a.owner_name || '').toLowerCase(); vb = (b.owner_name || '').toLowerCase(); break;
       case 'meeting':   va = a.meeting_date || ''; vb = b.meeting_date || ''; break;
       default:          return 0;
     }

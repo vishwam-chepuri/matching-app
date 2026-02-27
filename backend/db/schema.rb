@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_02_27_000003) do
+ActiveRecord::Schema[7.2].define(version: 2026_02_28_000003) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -18,9 +18,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_27_000003) do
     t.bigint "profile_id", null: false
     t.string "filename"
     t.integer "position", default: 0
+    t.string "url", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "url", null: false
     t.index ["profile_id"], name: "index_profile_photos_on_profile_id"
   end
 
@@ -40,7 +40,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_27_000003) do
     t.string "company"
     t.string "company_location"
     t.decimal "package", precision: 10, scale: 2
+    t.string "fathers_name"
     t.string "fathers_occupation"
+    t.string "mothers_name"
     t.string "mothers_occupation"
     t.string "siblings"
     t.string "rashi"
@@ -50,18 +52,15 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_27_000003) do
     t.boolean "starred", default: false
     t.text "notes"
     t.string "avatar_color"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "fathers_name"
-    t.string "mothers_name"
     t.bigint "user_id"
-    t.string "added_by"
     t.string "source"
     t.string "phone"
     t.date "meeting_date"
     t.string "linkedin"
     t.string "instagram"
     t.date "added_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_profiles_on_user_id"
   end
 
@@ -69,9 +68,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_27_000003) do
     t.string "email", null: false
     t.string "password_digest", null: false
     t.string "name"
+    t.boolean "is_admin", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "is_admin", default: false, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 

@@ -147,9 +147,9 @@ export default function ProfileDetail({ profile, onClose, onEdit }) {
                   )}
                 </DetailSection>
               )}
-              {isAdmin && (profile.added_by || profile.source) && (
+              {isAdmin && (profile.owner_name || profile.source) && (
                 <DetailSection icon={'📋'} title="Source">
-                  <DetailRow label="Added By" value={profile.added_by} />
+                  <DetailRow label="Added By" value={profile.owner_name} />
                   <DetailRow label="Source" value={profile.source} />
                 </DetailSection>
               )}            </div>

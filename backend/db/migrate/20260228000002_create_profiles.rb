@@ -6,7 +6,7 @@ class CreateProfiles < ActiveRecord::Migration[7.2]
       t.date :date_of_birth, null: false
       t.integer :height_cm
       t.string :city
-      t.string :state
+      t.string :district
       t.string :caste
       t.string :subcaste
       t.string :edu_level
@@ -16,9 +16,11 @@ class CreateProfiles < ActiveRecord::Migration[7.2]
       t.string :company
       t.string :company_location
       t.decimal :package, precision: 10, scale: 2
+      t.string :fathers_name
       t.string :fathers_occupation
+      t.string :mothers_name
       t.string :mothers_occupation
-      t.integer :siblings
+      t.string :siblings
       t.string :rashi
       t.string :nakshatra
       t.string :gotra
@@ -26,6 +28,13 @@ class CreateProfiles < ActiveRecord::Migration[7.2]
       t.boolean :starred, default: false
       t.text :notes
       t.string :avatar_color
+      t.references :user, foreign_key: true
+      t.string :source
+      t.string :phone
+      t.date :meeting_date
+      t.string :linkedin
+      t.string :instagram
+      t.date :added_date
 
       t.timestamps
     end

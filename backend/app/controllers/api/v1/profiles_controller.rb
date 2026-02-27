@@ -35,7 +35,6 @@ module Api
 
       def create
         profile = current_user.profiles.new(profile_params)  # always created under current user
-        profile.added_by = current_user.name.presence || current_user.email
         if profile.save
           render json: profile_json(profile), status: :created
         else
