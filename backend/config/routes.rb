@@ -3,7 +3,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      get 'health', to: 'health#show'
+      get 'health', to: 'manual_health_check#show'
 
       post   'register', to: 'users#create'
       post   'login',    to: 'sessions#create'

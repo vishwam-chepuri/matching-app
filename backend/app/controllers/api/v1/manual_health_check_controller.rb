@@ -1,6 +1,6 @@
 module Api
   module V1
-    class HealthController < ApplicationController
+    class ManualHealthCheckController < ApplicationController
       skip_before_action :authenticate!
 
       def show
