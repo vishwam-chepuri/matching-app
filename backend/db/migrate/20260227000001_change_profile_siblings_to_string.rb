@@ -1,9 +1,8 @@
 class ChangeProfileSiblingsToString < ActiveRecord::Migration[7.2]
   def up
-    # Migrate existing integer data to strings before changing the column type
-    Profile.where.not(siblings: nil).find_each do |profile|
-      profile.update_column(:siblings, profile.siblings.to_s)
-    end
+    # Convert existing integer data to string representation before type change.
+    # Uses raw SQL to avoid ActiveRecord model/schema mismatch on fresh databases.
+    execute("UPDATE profiles SET siblings = siblings::text WHERE siblings IS NOT NULL")
 
     change_column :profiles, :siblings, :string
   end
