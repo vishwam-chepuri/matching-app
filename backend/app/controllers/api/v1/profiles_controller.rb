@@ -23,7 +23,8 @@ module Api
         when 'status'
           profiles.order(status: sort_dir)
         else
-          profiles.order(added_date: sort_dir, created_at: sort_dir)
+          date_dir = params[:sort_dir]&.downcase == 'asc' ? 'asc' : 'desc'
+          profiles.order(added_date: date_dir, created_at: date_dir)
         end
 
         render json: profiles.map { |p| profile_json(p) }

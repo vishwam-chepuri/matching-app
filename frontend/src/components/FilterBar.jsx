@@ -72,12 +72,12 @@ export default function FilterBar({ filters, setFilters, profiles, viewMode, onV
                 onChange={(e) => onSortChange(e.target.value, sortDir)}
                 className="filter-bar__sort-select"
               >
-                <option value="">Sort: Date Added</option>
-                <option value="age">Sort: Age</option>
-                <option value="height">Sort: Height</option>
-                <option value="dob">Sort: Date of Birth</option>
-                <option value="package">Sort: Package</option>
-                <option value="status">Sort: Status</option>
+                <option value="">Date Added</option>
+                <option value="age">Age</option>
+                <option value="height">Height</option>
+                <option value="dob">Date of Birth</option>
+                <option value="package">Package</option>
+                <option value="status">Status</option>
               </select>
               <button
                 className="filter-bar__sort-dir"

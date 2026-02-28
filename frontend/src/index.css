@@ -548,7 +548,7 @@ textarea { resize: vertical; width: 100%; }
   .filter-bar__top { gap: 8px; margin-bottom: 6px; }
   .filter-bar__meta { display: none; }
   .filter-bar__search { min-width: 0; flex: 1; }
-  .filter-bar__sort { display: none; }
+  .filter-bar__sort-select { font-size: 0.75rem; padding: 4px 6px; }
   .view-toggle__label { display: none; }
 }
 

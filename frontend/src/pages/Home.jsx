@@ -23,7 +23,7 @@ export default function Home({ onAdminClick }) {
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState('grid'); // 'grid' | 'table'
   const [sortBy, setSortBy] = useState('');
-  const [sortDir, setSortDir] = useState('asc');
+  const [sortDir, setSortDir] = useState('desc');
   const [filters, setFilters] = useState(EMPTY_FILTERS);
   const [modalProfile, setModalProfile] = useState(undefined); // undefined = closed, null = new, object = edit
   const [detailProfile, setDetailProfile] = useState(null);
