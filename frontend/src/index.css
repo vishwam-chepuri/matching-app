@@ -1022,10 +1022,8 @@ textarea { resize: vertical; width: 100%; }
   inset: 0;
   z-index: 200;
   background: rgba(62, 39, 35, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   animation: fadeIn 0.2s;
 }
 
@@ -1039,12 +1037,13 @@ textarea { resize: vertical; width: 100%; }
 .profile-modal {
   background: var(--white);
   border-radius: var(--radius);
-  width: 100%;
+  width: calc(100% - 40px);
   max-width: 720px;
-  max-height: 90vh;
+  max-height: min(90vh, calc(100% - 40px));
   display: flex;
   flex-direction: column;
   box-shadow: 0 20px 60px rgba(123, 27, 27, 0.2);
+  margin: 20px auto;
 }
 
 .profile-modal__header {
@@ -1201,8 +1200,9 @@ textarea { resize: vertical; width: 100%; }
   border-radius: var(--radius);
   padding: 24px;
   max-width: 400px;
-  width: 100%;
+  width: calc(100% - 40px);
   box-shadow: 0 20px 60px rgba(123, 27, 27, 0.2);
+  margin: auto;
 }
 
 .confirm-dialog p {
@@ -1446,13 +1446,13 @@ textarea { resize: vertical; width: 100%; }
 .detail {
   background: var(--white);
   border-radius: var(--radius);
-  width: 100%;
+  width: calc(100% - 40px);
   max-width: 780px;
-  max-height: 92vh;
   display: flex;
   flex-direction: column;
   box-shadow: 0 24px 80px rgba(123, 27, 27, 0.25);
   overflow: hidden;
+  margin: 20px auto;
 }
 
 /* Hero with Photo */
@@ -1691,7 +1691,7 @@ textarea { resize: vertical; width: 100%; }
 }
 @media (max-width: 640px) {
   .detail__columns { grid-template-columns: 1fr; }
-  .detail { max-height: 95vh; }
+  .detail { max-height: none; }
   .detail__banner-content { flex-direction: column; text-align: center; }
   .detail__hero-actions--on-banner { top: 8px; right: 8px; }
 }
