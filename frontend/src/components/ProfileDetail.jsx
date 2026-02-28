@@ -22,17 +22,19 @@ export default function ProfileDetail({ profile, onClose, onEdit }) {
               <span className="detail__owner-tag">{profile.owner_name}</span>
             )}
             <div className="detail__hero-info">
-              <h2 className="detail__name detail__name--on-photo">
-                {fullName(profile)}
-                {profile.starred && <span className="detail__star">{'\u2B50'}</span>}
-              </h2>
+              <div className="detail__name-row">
+                <StatusBadge status={profile.status} />
+                <h2 className="detail__name detail__name--on-photo">
+                  {fullName(profile)}
+                  {profile.starred && <span className="detail__star">{'\u2B50'}</span>}
+                </h2>
+              </div>
               <p className="detail__tagline">
                 {profile.age} yrs{profile.height_cm ? ` \u00B7 ${cmToFtIn(profile.height_cm)}` : ''}
                 {' \u00B7 '}{profile.city}{profile.district ? `, ${profile.district}` : ''}
               </p>
             </div>
             <div className="detail__hero-actions">
-              <StatusBadge status={profile.status} />
               <button className="btn btn--primary btn--small" onClick={() => onEdit(profile)}>Edit</button>
               <button className="detail__close-btn" onClick={onClose}>&times;</button>
             </div>
@@ -62,10 +64,13 @@ export default function ProfileDetail({ profile, onClose, onEdit }) {
                 {initials(profile)}
               </div>
               <div className="detail__banner-text">
-                <h2 className="detail__name detail__name--on-banner">
-                  {fullName(profile)}
-                  {profile.starred && <span className="detail__star">{'\u2B50'}</span>}
-                </h2>
+                <div className="detail__name-row">
+                  <StatusBadge status={profile.status} />
+                  <h2 className="detail__name detail__name--on-banner">
+                    {fullName(profile)}
+                    {profile.starred && <span className="detail__star">{'\u2B50'}</span>}
+                  </h2>
+                </div>
                 <p className="detail__tagline detail__tagline--on-banner">
                   {profile.age} yrs{profile.height_cm ? ` \u00B7 ${cmToFtIn(profile.height_cm)}` : ''}
                   {' \u00B7 '}{profile.city}{profile.district ? `, ${profile.district}` : ''}
@@ -73,7 +78,6 @@ export default function ProfileDetail({ profile, onClose, onEdit }) {
               </div>
             </div>
             <div className="detail__hero-actions detail__hero-actions--on-banner">
-              <StatusBadge status={profile.status} />
               <button className="btn btn--primary btn--small" onClick={() => onEdit(profile)}>Edit</button>
               <button className="detail__close-btn detail__close-btn--on-banner" onClick={onClose}>&times;</button>
             </div>

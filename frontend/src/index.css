@@ -797,7 +797,7 @@ textarea { resize: vertical; width: 100%; }
   color: var(--text);
 }
 .card__stat--gold {
-  background: linear-gradient(135deg, var(--accent), var(--accent-light));
+  background: #7a7a7a;
   color: white;
 }
 
@@ -1501,7 +1501,14 @@ textarea { resize: vertical; width: 100%; }
   position: absolute;
   bottom: 16px;
   left: 24px;
+  right: 24px;
   z-index: 2;
+}
+.detail__name-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
 }
 .detail__hero-actions {
   position: absolute;
@@ -1650,9 +1657,7 @@ textarea { resize: vertical; width: 100%; }
   border-right: 1px solid var(--border);
 }
 .detail__stat-chip:last-child { border-right: none; }
-.detail__stat-chip--highlight {
-  background: linear-gradient(180deg, rgba(201, 150, 62, 0.08), transparent);
-}
+.detail__stat-chip--highlight {}
 .detail__stat-chip--accent {
   background: linear-gradient(180deg, rgba(124, 58, 237, 0.07), transparent);
 }
@@ -1670,7 +1675,7 @@ textarea { resize: vertical; width: 100%; }
   margin-top: 2px;
 }
 .detail__stat-chip--highlight .detail__stat-value {
-  color: var(--accent);
+  color: var(--text);
 }
 
 /* Detail Body */
