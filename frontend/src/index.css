@@ -791,6 +791,11 @@ textarea { resize: vertical; width: 100%; }
   color: var(--text);
   line-height: 1.4;
 }
+.card__info-row > span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .card__icon {
   font-size: 0.72rem;
   flex-shrink: 0;

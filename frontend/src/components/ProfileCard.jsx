@@ -273,16 +273,16 @@ export default function ProfileCard({
               <span className="card__icon">{'\uD83D\uDCCD'}</span>
               <span>{profile.city}{profile.district ? `, ${profile.district}` : ''}</span>
             </div>
-            {(profile.profession_title || profile.edu_level) && (
+            {(profile.edu_level || profile.edu_field || profile.edu_institution) && (
               <div className="card__info-row">
                 <span className="card__icon">{'\uD83C\uDF93'}</span>
-                <span>{[profile.edu_level, profile.profession_title].filter(Boolean).join(' \u00B7 ')}</span>
+                <span>{[profile.edu_level, profile.edu_field, profile.edu_institution].filter(Boolean).join(' \u00B7 ')}</span>
               </div>
             )}
-            {(profile.company || profile.company_location) && (
+            {(profile.profession_title || profile.company || profile.company_location) && (
               <div className="card__info-row">
-                <span className="card__icon">{'\uD83C\uDFE2'}</span>
-                <span>{[profile.company, profile.company_location].filter(Boolean).join(' \u00B7 ')}</span>
+                <span className="card__icon">{'\uD83D\uDCBC'}</span>
+                <span>{[profile.profession_title, profile.company, profile.company_location].filter(Boolean).join(' \u00B7 ')}</span>
               </div>
             )}
             {profile.caste && (
