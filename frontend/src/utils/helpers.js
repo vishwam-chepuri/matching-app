@@ -61,6 +61,7 @@ export const STATUS_COLORS = {
 };
 
 export const RASHI_OPTIONS = [
-  'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo',
-  'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces',
+  'Aries (Mesha)', 'Taurus (Vrishabha)', 'Gemini (Mithuna)', 'Cancer (Karkataka)',
+  'Leo (Simha)', 'Virgo (Kanya)', 'Libra (Tula)', 'Scorpio (Vrischika)',
+  'Sagittarius (Dhanus)', 'Capricorn (Makara)', 'Aquarius (Kumbha)', 'Pisces (Meena)',
 ];
