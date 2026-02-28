@@ -13,17 +13,47 @@ export default function ProfileCard({
   const photos = profile.photos || [];
   const hasPhotos = photos.length > 0;
 
-  // Auto-carousel state
+  // Photo carousel state
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+  const [userInteracted, setUserInteracted] = useState(false);
+  const touchStartX = useRef(null);
 
-  // Cycle through photos every 5 seconds
+  // Auto-carousel: cycle every 5s, pause after manual interaction for 10s
   useEffect(() => {
-    if (photos.length <= 1) return;
+    if (photos.length <= 1 || userInteracted) return;
     const interval = setInterval(() => {
       setCurrentPhotoIndex(i => (i + 1) % photos.length);
     }, 5000);
     return () => clearInterval(interval);
-  }, [photos.length]);
+  }, [photos.length, userInteracted]);
+
+  // Resume auto-carousel 10s after last manual interaction
+  useEffect(() => {
+    if (!userInteracted) return;
+    const timeout = setTimeout(() => setUserInteracted(false), 10000);
+    return () => clearTimeout(timeout);
+  }, [userInteracted, currentPhotoIndex]);
+
+  const goToPhoto = (direction) => {
+    setUserInteracted(true);
+    setCurrentPhotoIndex(i => {
+      if (direction === 'next') return (i + 1) % photos.length;
+      return (i - 1 + photos.length) % photos.length;
+    });
+  };
+
+  // Touch swipe handlers for mobile
+  const handlePhotoTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+  const handlePhotoTouchEnd = (e) => {
+    if (touchStartX.current === null) return;
+    const diff = touchStartX.current - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 40) {
+      goToPhoto(diff > 0 ? 'next' : 'prev');
+    }
+    touchStartX.current = null;
+  };
 
   const photo = photos[currentPhotoIndex] || photos[0];
 
@@ -141,7 +171,11 @@ export default function ProfileCard({
 
         {/* ── Visual Top: Photo or Gradient Banner ── */}
         {photo ? (
-          <div className="card__img-wrap">
+          <div
+            className="card__img-wrap"
+            onTouchStart={photos.length > 1 ? handlePhotoTouchStart : undefined}
+            onTouchEnd={photos.length > 1 ? handlePhotoTouchEnd : undefined}
+          >
             <img
               src={photo.url}
               alt={fullName(profile)}
@@ -149,6 +183,16 @@ export default function ProfileCard({
               onContextMenu={(e) => e.preventDefault()}
               draggable={false}
             />
+            {photos.length > 1 && (
+              <>
+                <button className="card__nav card__nav--prev" onClick={(e) => { e.stopPropagation(); goToPhoto('prev'); }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                </button>
+                <button className="card__nav card__nav--next" onClick={(e) => { e.stopPropagation(); goToPhoto('next'); }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
+                </button>
+              </>
+            )}
             <div className="card__img-overlay">
               <button
                 className="status-pill"
