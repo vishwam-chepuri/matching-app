@@ -55,7 +55,7 @@ Rails.application.configure do
     .then { |logger| ActiveSupport::TaggedLogging.new(logger) }
 
   # Prepend shortened request ID to each log line
-  config.log_tags = [ -> (request) { request.request_id[-12..] } ]
+  config.log_tags = [ -> (request) { "\n#{request.request_id[-12..]}" } ]
 
   # "info" includes generic and useful information about system operation, but avoids logging too much
   # information to avoid inadvertent exposure of personally identifiable information (PII). If you
