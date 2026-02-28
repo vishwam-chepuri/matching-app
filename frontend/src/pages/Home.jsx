@@ -11,6 +11,7 @@ import CompareView from '../components/CompareView';
 import ProfileDetail from '../components/ProfileDetail';
 import ConfirmDialog from '../components/ConfirmDialog';
 import Toast from '../components/Toast';
+import useBackClose from '../hooks/useBackClose';
 
 const EMPTY_FILTERS = {
   search: '', status: '', edu_level: '', caste: '', company_city: '', nativeCity: '',
@@ -135,11 +136,22 @@ export default function Home({ onAdminClick }) {
 
   const compareProfiles = profiles.filter((p) => compareIds.includes(p.id));
 
+  // ── Browser back button closes modals (critical for mobile UX) ──
+  const closeCompare = useCallback(() => { setShowCompare(false); setCompareMode(false); setCompareIds([]); }, []);
+  const closeModal = useCallback(() => setModalProfile(undefined), []);
+  const closeDetail = useCallback(() => setDetailProfile(null), []);
+  const closeDelete = useCallback(() => setDeleteTarget(null), []);
+
+  useBackClose(showCompare && compareProfiles.length >= 2, closeCompare);
+  useBackClose(modalProfile !== undefined, closeModal);
+  useBackClose(!!detailProfile, closeDetail);
+  useBackClose(!!deleteTarget, closeDelete);
+
   if (showCompare && compareProfiles.length >= 2) {
     return (
       <CompareView
         profiles={compareProfiles}
-        onClose={() => { setShowCompare(false); setCompareMode(false); setCompareIds([]); }}
+        onClose={closeCompare}
       />
     );
   }
@@ -283,8 +295,8 @@ export default function Home({ onAdminClick }) {
       {modalProfile !== undefined && (
         <ProfileModal
           profile={modalProfile}
-          onClose={() => setModalProfile(undefined)}
-          onSaved={() => { setModalProfile(undefined); fetchProfiles(); }}
+          onClose={closeModal}
+          onSaved={() => { closeModal(); fetchProfiles(); }}
           onToast={addToast}
         />
       )}
@@ -292,8 +304,8 @@ export default function Home({ onAdminClick }) {
       {detailProfile && (
         <ProfileDetail
           profile={detailProfile}
-          onClose={() => setDetailProfile(null)}
-          onEdit={(prof) => { setDetailProfile(null); setModalProfile(prof); }}
+          onClose={closeDetail}
+          onEdit={(prof) => { closeDetail(); setModalProfile(prof); }}
         />
       )}
 
@@ -301,7 +313,7 @@ export default function Home({ onAdminClick }) {
         <ConfirmDialog
           message={`Delete ${fullName(deleteTarget)}? This cannot be undone.`}
           onConfirm={handleDelete}
-          onCancel={() => setDeleteTarget(null)}
+          onCancel={closeDelete}
         />
       )}
 
